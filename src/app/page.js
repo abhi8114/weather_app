@@ -1,7 +1,7 @@
-
+import WeatherApp from "./components/WeatherApp";
 
 export default function Home() {
   return (
-    <div>Hello, World!</div>
+    <WeatherApp />
   );
 }

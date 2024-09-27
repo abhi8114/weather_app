@@ -1,40 +1,29 @@
-'use client'
+import { NextResponse } from 'next/server';
 
-import React, { useState } from 'react';
-import WeatherDisplay from './WeatherDisplay';
-import SearchBar from './SearchBar';
+const API_KEY = process.env.OPENWEATHER_API_KEY;
 
-export default function WeatherApp() {
-  const [weather, setWeather] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+export async function GET(request) {
+  const { searchParams } = new URL(request.url);
+  const city = searchParams.get('city');
 
-  const fetchWeather = async (city) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await fetch(`/api/weather?city=${encodeURIComponent(city)}`);
-      if (!response.ok) {
-        throw new Error('City not found');
-      }
-      const data = await response.json();
-      setWeather(data);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+  if (!city) {
+    return NextResponse.json({ error: 'City parameter is required' }, { status: 400 });
+  }
+
+  try {
+    const response = await fetch(
+      `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${API_KEY}&units=metric`
+    );
+    
+    
+    if (!response.ok) {
+      throw new Error('City not found');
     }
-  };
 
-  return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-        <h1 className="text-2xl font-bold mb-4 text-center">Real-Time Weather App</h1>
-        <SearchBar onSearch={fetchWeather} />
-        {loading && <p className="text-center mt-4">Loading...</p>}
-        {error && <p className="text-center mt-4 text-red-500">{error}</p>}
-        {weather && <WeatherDisplay weather={weather} />}
-      </div>
-    </div>
-  );
+    const data = await response.json();
+    return NextResponse.json(data);
+  } catch (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+  
 }
