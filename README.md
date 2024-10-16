@@ -12,4 +12,4 @@ This is a simple weather app built with Next.js. The app fetches real-time weath
 
 - **Frontend:** Next.js, React.js
 - **API:** OpenWeather API
-- **HTTP Requests:** Axios or native Fetch API
+- **HTTP Requests:** native Fetch API
